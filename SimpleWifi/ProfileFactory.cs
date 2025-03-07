@@ -70,14 +70,25 @@ namespace SimpleWifi
 		/// Fetches the template for an wireless connection profile.
 		/// </summary>
 		private static string GetTemplate(string name)
-		{
-			string resourceName = string.Format("SimpleWifi.ProfileXML.{0}.xml", name);
-
-			using (StreamReader reader = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceName)))
-			{
-				return reader.ReadToEnd();
-			}
-		}
+{
+    string resourceName = string.Format("SimpleWifi.ProfileXML.{0}.xml", name);
+    string result = string.Empty;
+    var assembly = System.Reflection.Assembly.GetExecutingAssembly();
+    using (var filestream = assembly.GetManifestResourceStream(resourceName))
+    {
+        byte[] fileContents = new byte[filestream.Length];
+        filestream.Read(fileContents, 0, fileContents.Length);
+        //
+        using (MemoryStream stream = new MemoryStream(fileContents))
+        {
+            using (StreamReader sr = new StreamReader(stream))
+            {
+                result = sr.ReadToEnd();
+            }
+        }
+    }
+    return result;
+}
 
 		/// <summary>
 		/// Converts an byte array into the hex representation, ex: [255, 255] -> "FFFF"
